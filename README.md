@@ -9,9 +9,7 @@ Endpoints: ```/divide, /multiply, /add, /subtract```
 Methods: ```POST``` only
 
 Body: Requires JSON format with a "NUMBERS" field in JSON object.
-
       Accepts only Integers.
-
       Will throw errors for div/0 & any float overflow errors.
 
 Returns: ```{
