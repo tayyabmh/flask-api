@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from flask_restful import Resource, Api
 import re
 import math
@@ -13,7 +13,9 @@ api = Api(app)
 # If not it returns back an error
 def json_numbers_validation():
     json_data = request.get_json(force=True)
-    number_string = str(json_data["numbers"])
+    if "NUMBERS" not in json_data:
+        return False, 'Make sure the body contains a NUMBERS field. Please try again.'
+    number_string = str(json_data["NUMBERS"])
     number_list = re.split(',|\s', number_string)
     number_list = filter(None, number_list)
 
@@ -35,8 +37,8 @@ class Multiply(Resource):
             float_list = validation_return_body
             result = reduce((lambda x,y: x * y), float_list)
             if math.isinf(result):
-                return "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers."
-            return "Multiplication results in: {}".format(result)
+                return jsonify({"message": "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers." })
+            return jsonify({"message": "Multiplication results in: {}".format(result)})
 
 # Divide class/resource is similar to multiply except there has been an added div/0 error check
 class Divide(Resource):
@@ -47,10 +49,10 @@ class Divide(Resource):
         else:
             float_list = validation_return_body
             if (0 in float_list):
-                return "Hey come on man we know you can't divide by zero! Please try again."
+                return jsonify({"message": "Hey come on man we know you can't divide by zero! Please try again."})
             result = reduce((lambda x,y: x / y), float_list)
 
-            return "Division results in: {}".format(result)
+            return jsonify({"message": "Division results in: {}".format(result)})
 
 # Similar to Multiply Resource
 class Add(Resource):
@@ -62,8 +64,8 @@ class Add(Resource):
             float_list = validation_return_body
             result = reduce((lambda x,y: x + y), float_list)
             if math.isinf(result):
-                return "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers"
-            return "Addition results in: {}".format(result)
+                return jsonify({"message": "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers"})
+            return jsonify({"message": "Addition results in: {}".format(result)})
 
 # Similar to Multiply Resource
 class Subtract(Resource):
@@ -75,8 +77,8 @@ class Subtract(Resource):
             float_list = validation_return_body
             result = reduce((lambda x,y: x - y), float_list)
             if math.isinf(result):
-                return "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers"
-            return "Subtraction results in: {}".format(result)
+                return jsonify({"message": "Woah those were those large numbers, looks like we had an overflow error! Try again with smaller/less numbers"})
+            return jsonify({"message": "Subtraction results in: {}".format(result)})
 
 # Adding resources to the API
 api.add_resource(Multiply,'/multiply')
@@ -86,4 +88,4 @@ api.add_resource(Subtract,'/subtract')
 
 # Run the app when ready
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
